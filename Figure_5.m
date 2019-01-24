@@ -13,7 +13,7 @@ rectimes=zeros(length(xs),length(ys));
 
 for i=1:length(xs)
     for j=1:length(ys)   
-        if norm([xs(i) ys(j)])<=1
+        if norm([xs(i) ys(j)])<1
         
             PC=[xs(i); ys(j);sqrt(1-(xs(i)^2+ys(j)^2))];
             N=Neq+pert_size*PC;
@@ -187,4 +187,4 @@ colorbar
 pbaspect([1 1 1])
 view(2)
 
-
+%save('wrong_result_fig_5')
