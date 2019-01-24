@@ -2,7 +2,6 @@ clear all
 close all
 
 %% Generate data to calculate MAFs
-cd D:\Autocorr_PCA\Sahara_model
 use Sahara_model_4D_noise
 
 B=60; %100
