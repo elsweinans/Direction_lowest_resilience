@@ -14,7 +14,7 @@ for i=1:n
 end 
 
 figure
-surf(z)
+surf(z')
 shading interp
 set(gca,'TickLength',[0 0])
 set(gca,'XTick',[])
@@ -37,6 +37,10 @@ end
 
 x=x/std(x);
 y=y/std(y);
+
+data=[x' y'];
+data=data*[cos(pi/4) -sin(pi/4);sin(pi/4) cos(pi/4)];
+
 
 %% Calculate autocorrelation for every angle
 angles=linspace(0,180,201);
