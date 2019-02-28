@@ -106,7 +106,7 @@ recovery3(1)=min(find(eucl_dist<pert_size*0.1))
 recovery3(2)=min(find(eucl_dist<pert_size*0.5))
 recovery3(3)=min(find(eucl_dist<pert_size*0.9))
 
-S_MAF3=[S1(end-40:end,2:4); S3(1:360,2:4)];
+S_MAF3=[S1(end-40:end,2:4); S4(1:360,2:4)];
 
 
 %% Create figure 2
@@ -221,7 +221,7 @@ hold on
 scatter(100,0.50,'rx','LineWidth',3)
 xlabel('time')
 ylabel('abundances')
-ylim([-.04 0.06])
+ylim([-.06 0.04])
 xlim([0 200])
 dim = [0.618 0.09 0.2 0.3];
 str = {'F'};
@@ -231,7 +231,7 @@ set(a5,'Position',[0.6184 0.13 0.2866 0.26])
 
 %% Figure 4A
 figure('position', [550, 450, 240, 180])
-bar(expl_AC)
+bar(diag(expl_AC))
 
 %% Figure 3 top row
 recoveries=[recovery1;recovery2;recovery3];
