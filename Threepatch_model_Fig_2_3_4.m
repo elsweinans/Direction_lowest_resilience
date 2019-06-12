@@ -1,18 +1,103 @@
 clear all
 close all
-
+rng('default')
 
 %% create data
 use Threepatch_periodic_add
-c=3.1
+c=3
 n=[0.02;0.02;0.02]
 eulerstep=0.01;
 solver euler eulerstep
 out N
-series_length=20000;
+series_length=200000;
 stabil
 data=time(series_length*eulerstep+10);
 data=data(:,2:4)-mean(data(:,2:4));
+
+%% Check data usefullness
+resolutions=[1 2 5 10 50 100 500 1000 2000];
+LR=[0.6800 0.5200 0.5169];
+figure
+ for j=1:length(resolutions)
+    res=resolutions(j);
+    data2=data(res:res:end,:);
+    if resolutions<110        
+        L=100:100:length(data2);
+    else
+        L=10:10:length(data2);
+    end
+    MAFS=zeros(length(L),3);
+    for i = 1:length(L)
+        data1=data2(end-L(i)+1:end,:);
+        [Wmaf, ~]=MAF(data1);
+        if Wmaf(1,1)<0
+            Wmaf(:,1)=Wmaf(:,1)*-1;
+        end
+        MAFS(i,:)=Wmaf(:,1);    
+    end
+    
+    subplot(3,3,j)
+    hold on
+    h=plot(L,MAFS,'LineWidth',2);
+    c=get(h,'Color');
+%     plot([min(L) max(L)],[LR(1) LR(1)],'-.','Color',c{1},'LineWidth',1.5)
+%     plot([min(L) max(L)],[LR(2) LR(2)],'Color',c{2},'LineWidth',1.5)
+%     plot([min(L) max(L)],[LR(3) LR(3)],'--','color',c{3},'LineWidth',1.5)
+    xlim([0 max(L)])
+    ylim([-1 1])
+    xlabel('number of data points')
+    ylabel('MAF 1')
+    ax = gca;
+    ax.XAxis.Exponent = 0;
+    title(sprintf('Spacing between points: %i',(res)))
+    if j==1
+        legend('X','Y','Z')
+    end
+ end
+
+resolutions=[1 2 5 10 50 100 500 1000 2000];
+figure
+ for j=1:length(resolutions)
+    res=resolutions(j);
+    data2=data(res:res:end,:);
+    if resolutions<110        
+        L=100:100:length(data2);
+    else
+        L=10:10:length(data2);
+    end
+    PCS=zeros(length(L),3);
+    for i = 1:length(L)
+        data1=data2(end-L(i)+1:end,:);
+        C=cov(data1);
+        [V,E]=eig(C);
+        PC=V(:,end);
+        if PC(1)<0
+            PC=PC*-1;
+        end
+        PCS(i,:)=PC ;  
+    end
+    
+    subplot(3,3,j)
+    hold on
+    h=plot(L,PCS,'LineWidth',2);
+    c=get(h,'Color');
+%     plot([min(L) max(L)],[LR(1) LR(1)],'-.','Color',c{1},'LineWidth',1.5)
+%     plot([min(L) max(L)],[LR(2) LR(2)],'Color',c{2},'LineWidth',1.5)
+%     plot([min(L) max(L)],[LR(3) LR(3)],'--','color',c{3},'LineWidth',1.5)
+    xlim([min(L) max(L)])
+    ylim([-1 1])
+    xlabel('number of data points')
+    ylabel('PC 1')
+    ax = gca;
+    ax.XAxis.Exponent = 0;
+    title(sprintf('Spacing between points: %i',(res)))
+    if j==1
+        legend('X','Y','Z')
+    end
+ end
+ 
+
+%% Calculate directional autocorrelation & variance
 Xs=-1:0.01:1;
 Ys=Xs;
 Zs=zeros(length(Xs));
@@ -61,7 +146,7 @@ annotation_AC3=sprintf('  AR(1)= %0.3f',(autocorr_MAF3))
 %% perform perturbation experiments
 use Threepatch_periodic_add
 out N
-c=3.1
+c=3
 n=0.0
 
 N=[6;6;6];
@@ -79,9 +164,9 @@ S2=time(500);
 
 dist_to_eq=S2(:,2:4)-ones(length(S2(:,1)),1)*Neq';
 eucl_dist=sqrt(sum(dist_to_eq.^2,2));
-recovery1(1)=min(find(eucl_dist<pert_size*0.1))
-recovery1(2)=min(find(eucl_dist<pert_size*0.5))
-recovery1(3)=min(find(eucl_dist<pert_size*0.9))
+recovery1(1)=min(find(eucl_dist<pert_size*0.1));
+recovery1(2)=min(find(eucl_dist<pert_size*0.5));
+recovery1(3)=min(find(eucl_dist<pert_size*0.9));
 
 S_MAF1=[S1(end-40:end,2:4); S2(1:360,2:4)];
 
@@ -91,9 +176,9 @@ S3=time(500);
 
 dist_to_eq=S3(:,2:4)-ones(length(S3(:,1)),1)*Neq';
 eucl_dist=sqrt(sum(dist_to_eq.^2,2));
-recovery2(1)=min(find(eucl_dist<pert_size*0.1))
-recovery2(2)=min(find(eucl_dist<pert_size*0.5))
-recovery2(3)=min(find(eucl_dist<pert_size*0.9))
+recovery2(1)=min(find(eucl_dist<pert_size*0.1));
+recovery2(2)=min(find(eucl_dist<pert_size*0.5));
+recovery2(3)=min(find(eucl_dist<pert_size*0.9));
 
 S_MAF2=[S1(end-40:end,2:4); S3(1:360,2:4)];
 
@@ -102,9 +187,9 @@ S4=time(500);
 dist_to_eq=S4(:,2:4)-ones(length(S4(:,1)),1)*Neq';
 eucl_dist=sqrt(sum(dist_to_eq.^2,2));
 
-recovery3(1)=min(find(eucl_dist<pert_size*0.1))
-recovery3(2)=min(find(eucl_dist<pert_size*0.5))
-recovery3(3)=min(find(eucl_dist<pert_size*0.9))
+recovery3(1)=min(find(eucl_dist<pert_size*0.1));
+recovery3(2)=min(find(eucl_dist<pert_size*0.5));
+recovery3(3)=min(find(eucl_dist<pert_size*0.9));
 
 S_MAF3=[S1(end-40:end,2:4); S4(1:360,2:4)];
 
@@ -243,7 +328,3 @@ subplot(3,1,2)
 bar(recoveries(:,2))
 subplot(3,1,3)
 bar(recoveries(:,3))
-
-
-
-

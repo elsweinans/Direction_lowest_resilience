@@ -1,5 +1,6 @@
 clear all
 close all
+rng('default')
 
 %% Generate data to calculate MAFs
 use Sahara_model_4D_noise
@@ -28,7 +29,7 @@ B=60;
 stabil
 Veq=V;
 pert_size=0.06; %2
-maxL=200;
+maxL=250;
 colors = [1 0.2 0.2; 0 0.5 1; 0  0.6 0.3; 0.5 0.35 0.35];
 recs105090=zeros(4,3);
 
@@ -52,11 +53,15 @@ for i = 1:4
         plot(S1(1:maxL,j),'LineWidth',1.5,'Color',colors(j,:))
         hold on
     end
-    plot([recoveries(i) recoveries(i)],[-0.5 0.5],'--k','LineWidth',1.5)
+    plot([recs105090(i,1) recs105090(i,1)],[-0.5 0.5],'k','LineWidth',1.5)
+    plot([recs105090(i,2) recs105090(i,2)],[-0.5 0.5],'--k','LineWidth',1.5)
+    plot([recs105090(i,3) recs105090(i,3)],[-0.5 0.5],':k','LineWidth',1.5)
+    
     ylim([-0.1 0.1])
     if i==4
         xlabel('Time')
     end
+    ylabel(sprintf('MAF %i',(i)))
 end
 
 
@@ -74,8 +79,77 @@ bar(expl_AC)
 xlabel('MAF numer')
 ylabel('explained autocorrelation')
 
+%% Data usefullness
+resolutions=[1 2 5 10 50 100 500 1000 2000];
+data=data(10:10:end,:);
+data=data(end-200000:end,:);
+figure
+ for j=1:length(resolutions)
+     j
+    res=resolutions(j);
+    data2=data(res:res:end,:);
+    %L=100:500:length(data2);
+    if resolutions<110        
+        L=100:100:length(data2);
+    else
+        L=10:10:length(data2);
+    end
+    MAFS=zeros(length(L),4);
+    for i = 1:length(L)        
+        data1=data2(end-L(i)+1:end,:);
+        [Wmaf, ~]=MAF(data1);
+        if Wmaf(1,1)<0
+            Wmaf(:,1)=Wmaf(:,1)*-1;
+        end
+        MAFS(i,:)=Wmaf(:,1);    
+    end
+    
+    subplot(3,3,j)
+    hold on
+    h=plot(L,MAFS,'LineWidth',2);
+    xlim([0 max(L)])
+    ylim([-1 1])
+    xlabel('number of data points')
+    ylabel('MAF 1')
+    ax = gca;
+    ax.XAxis.Exponent = 0;
+    title(sprintf('Spacing between points: %i',(res)))
+ end
 
+resolutions=[1 2 5 10 50 100 500 1000 2000];
+figure
+ for j=1:length(resolutions)
+    res=resolutions(j);
+    data2=data(res:res:end,:);
+    if resolutions<110        
+        L=100:100:length(data2);
+    else
+        L=10:10:length(data2);
+    end
+    PCS=zeros(length(L),4);
+    for i = 1:length(L)
+        data1=data2(end-L(i)+1:end,:);
+        C=cov(data1);
+        [V,E]=eig(C);
+        PC=V(:,end);
+        if PC(1)<0
+            PC=PC*-1;
+        end
+        PCS(i,:)=PC ;  
+    end
+    
+    subplot(3,3,j)
+    hold on
+    h=plot(L,PCS,'LineWidth',2);
+    xlim([min(L) max(L)])
+    ylim([-1 1])
+    xlabel('number of data points')
+    ylabel('PC 1')
+    ax = gca;
+    ax.XAxis.Exponent = 0;
+    title(sprintf('Spacing between points: %i',(res)))
 
+ end
 
 
 

@@ -1,3 +1,6 @@
+clear all
+close all
+rng('default')
 
 %% perturb in all directions to find the direction of longest recovery
 use Threepatch_periodic_det
@@ -12,6 +15,7 @@ pert_size=0.6;
 rectimes=zeros(length(xs),length(ys));
 
 for i=1:length(xs)
+    i
     for j=1:length(ys)   
         if norm([xs(i) ys(j)])<1
         
@@ -69,7 +73,8 @@ for i = 1:length(noises)
     noise=noises(:,i);
     n=size_noise*noise;
     N=Neq;
-    simtime 1 3000 3000;
+    %simtime 1 3000 3000;
+    simtime 1 1000 1000;
     S=time('-s');
     S=S(200:end,2:end);
     S=S-mean(S);
@@ -155,7 +160,6 @@ plot3([0.125 0.27],[0.25*height 0.25*height+rico*0.145],[maxval+1 maxval+1],'Col
 plot3([0.25 0.52],[0.5*height 0.5*height+rico*0.27],[maxval+1 maxval+1],'Color', [0.85 0.85 0.85],'LineWidth',0.8)
 plot3([0.375 0.77],[0.75*height 0.75*height+rico*0.395],[maxval+1 maxval+1],'Color', [0.85 0.85 0.85],'LineWidth',0.8)
 plot3([0.5 1.02],[height height+rico*0.52],[maxval+1 maxval+1],'Color', [0.85 0.85 0.85],'LineWidth',0.8)
-
 
 plot3([0 0.52],[0 -rico*0.52],[maxval+1 maxval+1],'Color', [0.85 0.85 0.85],'LineWidth',0.8)
 plot3([0.25 0.645],[0 -rico*0.395],[maxval+1 maxval+1],'Color', [0.85 0.85 0.85],'LineWidth',0.8)
