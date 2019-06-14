@@ -1,26 +1,41 @@
+clear all
+close all
+rng('default')
+
 %% figure 1A
 
 x=[-9.95:0.1:10];
 y=x;
 n=length(x);
 z=zeros(n,n);
+line1=zeros(length(x),1);
+line2=zeros(length(x),1);
 
 for i=1:n
     for j=1:n
        
             z(i,j)=x(i)^2+y(j)^2-x(i)*y(j);
+            if x(i)==y(j)
+                line1(i)=z(i,j);
+            elseif x(i)+y(j)<0.01
+                i
+                line2(i)=z(i,j);
+            end
 
     end
 end 
 
 figure
-surf(z')
+surf(x,y,z')
 shading interp
 set(gca,'TickLength',[0 0])
 set(gca,'XTick',[])
 set(gca,'YTick',[])
 set(gca,'ZTick',[])
 colormap(pink)
+hold on
+plot3(x,y,line1,'--r','LineWidth',2)
+plot3(x,-y,line2,'r','LineWidth',2)
 
 %% Create timeseries for x and y
 

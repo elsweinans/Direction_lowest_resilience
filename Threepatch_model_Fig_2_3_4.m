@@ -17,29 +17,41 @@ data=data(:,2:4)-mean(data(:,2:4));
 %% Check data usefullness
 resolutions=[1 2 5 10 50 100 500 1000 2000];
 LR=[0.6800 0.5200 0.5169];
-figure
+figure(2)
+figure(3)
  for j=1:length(resolutions)
+    j
     res=resolutions(j);
     data2=data(res:res:end,:);
-    if resolutions<110        
+    if res<11
+        L=100:200:length(data2);
+    elseif res<110        
         L=100:100:length(data2);
     else
         L=10:10:length(data2);
     end
     MAFS=zeros(length(L),3);
+    if ismember(j,[4 6 8])
+        MAFsims=zeros(length(L),1);
+    end
     for i = 1:length(L)
         data1=data2(end-L(i)+1:end,:);
         [Wmaf, ~]=MAF(data1);
         if Wmaf(1,1)<0
             Wmaf(:,1)=Wmaf(:,1)*-1;
         end
-        MAFS(i,:)=Wmaf(:,1);    
+        MAFS(i,:)=Wmaf(:,1);  
+        if ismember(j,[4 6 8])
+            [~,~,vecsim,~]=vectorSimilarity(Wmaf(:,1),LR');
+            MAFsims(i)=vecsim;
+        end         
     end
     
+    figure(2)
     subplot(3,3,j)
     hold on
     h=plot(L,MAFS,'LineWidth',2);
-    c=get(h,'Color');
+%     c=get(h,'Color');
 %     plot([min(L) max(L)],[LR(1) LR(1)],'-.','Color',c{1},'LineWidth',1.5)
 %     plot([min(L) max(L)],[LR(2) LR(2)],'Color',c{2},'LineWidth',1.5)
 %     plot([min(L) max(L)],[LR(3) LR(3)],'--','color',c{3},'LineWidth',1.5)
@@ -53,19 +65,42 @@ figure
     if j==1
         legend('X','Y','Z')
     end
+    
+    figure(3)
+    hold on
+    if j==4
+        A=MAFsims;
+        plot(MAFsims(5:5:end),'k','LineWidth',2)
+    elseif j==6
+        B=MAFsims;
+        plot(MAFsims,'--k','LineWidth',2)
+    elseif j==8
+        C=MAFsims;
+        plot(MAFsims,':k','LineWidth',2)
+        legend('spacing=10','spacing=100','spacing=1000')
+        ylabel('performance')
+        xlabel('amount of data')
+        ylim([0.5 1])
+    end    
  end
 
 resolutions=[1 2 5 10 50 100 500 1000 2000];
-figure
+figure(4)
+figure(5)
  for j=1:length(resolutions)
     res=resolutions(j);
     data2=data(res:res:end,:);
-    if resolutions<110        
+    if res<11
+        L=100:200:length(data2);
+    elseif res<110        
         L=100:100:length(data2);
     else
         L=10:10:length(data2);
     end
     PCS=zeros(length(L),3);
+    if ismember(j,[4 6 8])
+        PCsims=zeros(length(L),1);
+    end
     for i = 1:length(L)
         data1=data2(end-L(i)+1:end,:);
         C=cov(data1);
@@ -75,8 +110,13 @@ figure
             PC=PC*-1;
         end
         PCS(i,:)=PC ;  
+        if ismember(j,[4 6 8])
+            [~,~,vecsim,~]=vectorSimilarity(PC,LR');
+            PCsims(i)=vecsim;
+        end         
     end
     
+    figure(4)
     subplot(3,3,j)
     hold on
     h=plot(L,PCS,'LineWidth',2);
@@ -94,6 +134,20 @@ figure
     if j==1
         legend('X','Y','Z')
     end
+    
+    figure(5)
+    hold on
+    if j==4
+        plot(PCsims(5:5:end),'k','LineWidth',2)
+    elseif j==6
+        plot(PCsims,'--k','LineWidth',2)
+    elseif j==8
+        plot(PCsims,':k','LineWidth',2)
+        legend('spacing=10','spacing=100','spacing=1000')
+        ylabel('performance')
+        xlabel('amount of data')
+        ylim([0.5 1])
+    end   
  end
  
 
