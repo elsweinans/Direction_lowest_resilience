@@ -4,152 +4,27 @@ rng('default')
 
 %% create data
 use Threepatch_periodic_add
-c=3
-n=[0.02;0.02;0.02]
+c=3;
+n=[0.02;0.02;0.02];
 eulerstep=0.01;
 solver euler eulerstep
 out N
-series_length=200000;
+series_length=2000000;
 stabil
 data=time(series_length*eulerstep+10);
 data=data(:,2:4)-mean(data(:,2:4));
+data=data(1002:end,:);
 
-%% Check data usefullness
-resolutions=[1 2 5 10 50 100 500 1000 2000];
-LR=[0.6800 0.5200 0.5169];
-figure(2)
-figure(3)
- for j=1:length(resolutions)
-    j
-    res=resolutions(j);
-    data2=data(res:res:end,:);
-    if res<11
-        L=100:200:length(data2);
-    elseif res<110        
-        L=100:100:length(data2);
-    else
-        L=10:10:length(data2);
-    end
-    MAFS=zeros(length(L),3);
-    if ismember(j,[4 6 8])
-        MAFsims=zeros(length(L),1);
-    end
-    for i = 1:length(L)
-        data1=data2(end-L(i)+1:end,:);
-        [Wmaf, ~]=MAF(data1);
-        if Wmaf(1,1)<0
-            Wmaf(:,1)=Wmaf(:,1)*-1;
-        end
-        MAFS(i,:)=Wmaf(:,1);  
-        if ismember(j,[4 6 8])
-            [~,~,vecsim,~]=vectorSimilarity(Wmaf(:,1),LR');
-            MAFsims(i)=vecsim;
-        end         
-    end
-    
-    figure(2)
-    subplot(3,3,j)
-    hold on
-    h=plot(L,MAFS,'LineWidth',2);
-%     c=get(h,'Color');
-%     plot([min(L) max(L)],[LR(1) LR(1)],'-.','Color',c{1},'LineWidth',1.5)
-%     plot([min(L) max(L)],[LR(2) LR(2)],'Color',c{2},'LineWidth',1.5)
-%     plot([min(L) max(L)],[LR(3) LR(3)],'--','color',c{3},'LineWidth',1.5)
-    xlim([0 max(L)])
-    ylim([-1 1])
-    xlabel('number of data points')
-    ylabel('MAF 1')
-    ax = gca;
-    ax.XAxis.Exponent = 0;
-    title(sprintf('Spacing between points: %i',(res)))
-    if j==1
-        legend('X','Y','Z')
-    end
-    
-    figure(3)
-    hold on
-    if j==4
-        A=MAFsims;
-        plot(MAFsims(5:5:end),'k','LineWidth',2)
-    elseif j==6
-        B=MAFsims;
-        plot(MAFsims,'--k','LineWidth',2)
-    elseif j==8
-        C=MAFsims;
-        plot(MAFsims,':k','LineWidth',2)
-        legend('spacing=10','spacing=100','spacing=1000')
-        ylabel('performance')
-        xlabel('amount of data')
-        ylim([0.5 1])
-    end    
- end
+%save('data_3patch')
 
-resolutions=[1 2 5 10 50 100 500 1000 2000];
-figure(4)
-figure(5)
- for j=1:length(resolutions)
-    res=resolutions(j);
-    data2=data(res:res:end,:);
-    if res<11
-        L=100:200:length(data2);
-    elseif res<110        
-        L=100:100:length(data2);
-    else
-        L=10:10:length(data2);
-    end
-    PCS=zeros(length(L),3);
-    if ismember(j,[4 6 8])
-        PCsims=zeros(length(L),1);
-    end
-    for i = 1:length(L)
-        data1=data2(end-L(i)+1:end,:);
-        C=cov(data1);
-        [V,E]=eig(C);
-        PC=V(:,end);
-        if PC(1)<0
-            PC=PC*-1;
-        end
-        PCS(i,:)=PC ;  
-        if ismember(j,[4 6 8])
-            [~,~,vecsim,~]=vectorSimilarity(PC,LR');
-            PCsims(i)=vecsim;
-        end         
-    end
-    
-    figure(4)
-    subplot(3,3,j)
-    hold on
-    h=plot(L,PCS,'LineWidth',2);
-    c=get(h,'Color');
-%     plot([min(L) max(L)],[LR(1) LR(1)],'-.','Color',c{1},'LineWidth',1.5)
-%     plot([min(L) max(L)],[LR(2) LR(2)],'Color',c{2},'LineWidth',1.5)
-%     plot([min(L) max(L)],[LR(3) LR(3)],'--','color',c{3},'LineWidth',1.5)
-    xlim([min(L) max(L)])
-    ylim([-1 1])
-    xlabel('number of data points')
-    ylabel('PC 1')
-    ax = gca;
-    ax.XAxis.Exponent = 0;
-    title(sprintf('Spacing between points: %i',(res)))
-    if j==1
-        legend('X','Y','Z')
-    end
-    
-    figure(5)
-    hold on
-    if j==4
-        plot(PCsims(5:5:end),'k','LineWidth',2)
-    elseif j==6
-        plot(PCsims,'--k','LineWidth',2)
-    elseif j==8
-        plot(PCsims,':k','LineWidth',2)
-        legend('spacing=10','spacing=100','spacing=1000')
-        ylabel('performance')
-        xlabel('amount of data')
-        ylim([0.5 1])
-    end   
- end
- 
+%% Data usefullness
+%load('data_3patch')
+
+data_suff_length2(data,[6 95],100,'MAF')
+data_suff_length2(data,[6 95],100,'PCA')
+
+data_res(data,[6 95],100,[1 2 4 6 10:20:1000],1000,'MAF')
+data_res(data,[6 95],100,[1 2 4 6 10:20:1000],1000,'PCA')
 
 %% Calculate directional autocorrelation & variance
 Xs=-1:0.01:1;
@@ -246,6 +121,51 @@ recovery3(2)=min(find(eucl_dist<pert_size*0.5));
 recovery3(3)=min(find(eucl_dist<pert_size*0.9));
 
 S_MAF3=[S1(end-40:end,2:4); S4(1:360,2:4)];
+
+%% random perturbation experiment
+circ=randn(1000,g_grind.statevars.dim);
+dcirc=sqrt(sum(circ.^2,2));
+randnrs=circ./dcirc(:,ones(1,g_grind.statevars.dim));
+randnrs=randnrs*pert_size;
+recs10=zeros(1000,1);
+recs50=zeros(1000,1);
+recs90=zeros(1000,1);
+
+for i=1:1000
+    i
+    N=Neq'+randnrs(i,:);
+    S=time(200,'-s');
+    data_pert1=S(:,2:end);
+    S1=data_pert1-Neq';
+    
+    dist_to_eq=S1;
+    eucl_dist=sqrt(sum(dist_to_eq.^2,2));
+    recs10(i)=min(find(eucl_dist<pert_size*0.9));
+    recs50(i)=min(find(eucl_dist<pert_size*0.5));
+    recs90(i)=min(find(eucl_dist<pert_size*0.1));
+end
+
+figure
+subplot(3,1,1)
+hold on
+histogram(recs10)
+plot([recovery1(3) recovery1(3)],[0 600],'-k','LineWidth',1.5)
+plot([recovery3(3) recovery3(3)],[0 600],':k','LineWidth',1.5)
+ylim([0 600])
+subplot(3,1,2)
+hold on
+histogram(recs50)
+plot([recovery1(2) recovery1(2)],[0 150],'-k','LineWidth',1.5)
+plot([recovery3(2) recovery3(2)],[0 150],':k','LineWidth',1.5)
+ylim([0 150])
+ylabel('frequency')
+subplot(3,1,3)
+hold on
+histogram(recs90)
+plot([recovery1(1) recovery1(1)],[0 150],'-k','LineWidth',1.5)
+plot([recovery3(1) recovery3(1)],[0 150],':k','LineWidth',1.5)
+ylim([0 150])
+xlabel('recovery times')
 
 
 %% Create figure 2

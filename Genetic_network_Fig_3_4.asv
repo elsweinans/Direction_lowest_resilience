@@ -18,7 +18,7 @@ data=S(:,2:6);
 data=data-mean(data);
 
 %save('data_chen')
-%load('data_chen')
+load('data_chen')
 
 [Wmaf expl_AC]=MAF(data);
 
@@ -72,7 +72,8 @@ end
 
 
 %% Check data usefullness
-data_suff_length2(data,[6 95],100,'MAF')
+blocks=size
+data_suff_length3(data,[6 95],100,'MAF')
 data_suff_length2(data,[6 95],100,'PCA')
 
 data_res(data,[6 95],100,[1 2 4 6 10:20:1000],1000,'MAF')
