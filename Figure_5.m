@@ -63,8 +63,8 @@ end
 use Threepatch_periodic_add
 out N
 solver euler 0.01
-size_noise=0.4;
-%size_noise=0.2;
+%size_noise=0.4; %For supplementary fig S9
+size_noise=0.2;
 MAFs=zeros(length(noises),3);
 PCAs=zeros(length(noises),3);
 MAF1_similarities=zeros(length(noises),1);
@@ -75,7 +75,7 @@ for i = 1:length(noises)
     n=size_noise*noise;
     N=Neq;
     simtime 1 4000 4000;
-    %simtime 1 500 500;
+    %simtime 1 500 500; %For supplementary fig S8
     S=time('-s');
     S=S(200:end,2:end);
     S=S-mean(S);
