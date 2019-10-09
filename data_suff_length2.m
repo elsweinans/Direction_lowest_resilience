@@ -40,13 +40,13 @@ function data_suff_length2(data,CI,nrsamples,method)
         end        
     end
 
-    figure
+    figure('pos',[100 100 430 300])
     hold on
     clrs=['r','g','b','k','c'];
     clrs=clrs(1:nrvars);
     x=1:nrblocks;    
     for k=1:nrvars        
-        fill([blocks flip(blocks)],[lowerlim(:,k)' flip(upperlim(:,k)')],clrs(k),'LineStyle','none','facealpha',0.08)
+        fill([blocks flip(blocks)],[lowerlim(:,k)' flip(upperlim(:,k)')],clrs(k),'LineStyle','none','facealpha',0.15)
         plot(blocks,medians(:,k),'Color',clrs(k))
     end   
     ylim([-1 1])

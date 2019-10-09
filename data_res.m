@@ -39,13 +39,13 @@ function data_res(data,CI,nrsamples,resolutions,blocksize,method)
         
     end
     
-    figure
+    figure('pos',[100 100 430 300])
     hold on
     clrs=['r','g','b','k','c'];
     clrs=clrs(1:nr_vars);
     x=1:length(resolutions);    
     for k=1:nr_vars        
-        fill([resolutions flip(resolutions)],[lower(:,k)' flip(upper(:,k)')],clrs(k),'LineStyle','none','facealpha',0.08)
+        fill([resolutions flip(resolutions)],[lower(:,k)' flip(upper(:,k)')],clrs(k),'LineStyle','none','facealpha',0.15)
         plot(resolutions,medians(:,k),'Color',clrs(k))
     end   
     ylim([-1 1])
