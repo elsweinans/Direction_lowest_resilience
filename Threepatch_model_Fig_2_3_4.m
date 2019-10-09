@@ -15,10 +15,8 @@ data=time(series_length*eulerstep+10);
 data=data(:,2:4)-mean(data(:,2:4));
 data=data(1002:end,:);
 
-%save('data_3patch')
 
 %% Data usefullness
-%load('data_3patch')
 
 data_suff_length2(data,[6 95],100,'MAF')
 data_suff_length2(data,[6 95],100,'PCA')
@@ -75,8 +73,8 @@ annotation_AC3=sprintf('  AR(1)= %0.3f',(autocorr_MAF3))
 %% perform perturbation experiments
 use Threepatch_periodic_add
 out N
-c=3
-n=0.0
+c=3;
+n=[0;0;0];
 
 N=[6;6;6];
 stabil
@@ -88,8 +86,9 @@ N_MAF3=N+pert_size*Wmaf(:,3);
 
 S1=time(200);
 
+simtime 1 100 1500
 N=N_MAF1;
-S2=time(500);
+S2=time('-s');
 
 dist_to_eq=S2(:,2:4)-ones(length(S2(:,1)),1)*Neq';
 eucl_dist=sqrt(sum(dist_to_eq.^2,2));
@@ -101,7 +100,7 @@ S_MAF1=[S1(end-40:end,2:4); S2(1:360,2:4)];
 
 
 N=N_MAF2;
-S3=time(500);
+S3=time('-s');
 
 dist_to_eq=S3(:,2:4)-ones(length(S3(:,1)),1)*Neq';
 eucl_dist=sqrt(sum(dist_to_eq.^2,2));
@@ -112,7 +111,7 @@ recovery2(3)=min(find(eucl_dist<pert_size*0.9));
 S_MAF2=[S1(end-40:end,2:4); S3(1:360,2:4)];
 
 N=N_MAF3;
-S4=time(500);
+S4=time('-s');
 dist_to_eq=S4(:,2:4)-ones(length(S4(:,1)),1)*Neq';
 eucl_dist=sqrt(sum(dist_to_eq.^2,2));
 
@@ -130,11 +129,12 @@ randnrs=randnrs*pert_size;
 recs10=zeros(1000,1);
 recs50=zeros(1000,1);
 recs90=zeros(1000,1);
+simtime 1 100 1500
 
 for i=1:1000
     i
     N=Neq'+randnrs(i,:);
-    S=time(200,'-s');
+    S=time('-s');
     data_pert1=S(:,2:end);
     S1=data_pert1-Neq';
     
@@ -169,7 +169,7 @@ xlabel('recovery times')
 
 
 %% Create figure 2
-figure('pos',[100 100 1200 600])
+fig1=figure('pos',[100 100 1400 600])
 subplot(5,5,[1:5])
 plot(data-mean(data),'LineWidth',1.7)
 legend('X','Y','Z')
@@ -287,10 +287,13 @@ str = {'F'};
 annotation('textbox',dim,'EdgeColor','none','String',str,'FitBoxToText','on','FontSize',14);
 set(a5,'Position',[0.6184 0.13 0.2866 0.26])
 
+fig1.Renderer='Painters';
 
 %% Figure 4A
 figure('position', [550, 450, 240, 180])
-bar(diag(expl_AC))
+expl_AC2=diag(expl_AC)/sum(diag(expl_AC))
+bar(expl_AC2)
+ylim([0 0.6])
 
 %% Figure 3 top row
 recoveries=[recovery1;recovery2;recovery3];

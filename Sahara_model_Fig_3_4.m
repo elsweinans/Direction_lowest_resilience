@@ -5,17 +5,14 @@ rng('default')
 %% Generate data to calculate MAFs
 use Sahara_model_4D_noise
 
-B=60; %100
+B=60; 
 
 solver euler 0.01
 out V
-n=0.02*ones(4,1); %0.08*ones(4,1);
+n=0.02*ones(4,1); 
 S=time(20010);
 
 data=S(1002:end,2:5);
-
-%save('data_sahara')
-load('data_sahara')
 
 [Wmaf expl_AC]=MAF(data);
 
@@ -32,7 +29,7 @@ out V
 B=60;
 stabil
 Veq=V;
-pert_size=0.06; %2
+pert_size=0.06; 
 maxL=250;
 colors = [1 0.2 0.2; 0 0.5 1; 0  0.6 0.3; 0.5 0.35 0.35];
 recs105090=zeros(4,3);
@@ -77,9 +74,10 @@ for i = 1:3
 end
 
 %% Figure 4B
-expl_AC=diag(expl_AC)/sum(diag(expl_AC))
-figure
-bar(expl_AC)
+figure('position', [550, 450, 280, 180])
+expl_AC2=diag(expl_AC)/sum(diag(expl_AC));
+bar(expl_AC2)
+xlim([0 5])
 xlabel('MAF numer')
 ylabel('explained autocorrelation')
 

@@ -17,9 +17,6 @@ S=time(2000);
 data=S(:,2:6);
 data=data-mean(data);
 
-%save('data_chen')
-%load('data_chen')
-
 [Wmaf expl_AC]=MAF(data);
 
 size_pert=0.6;
@@ -60,7 +57,7 @@ end
 
 %% Figure 4C
 expl_AC=diag(expl_AC)/sum(diag(expl_AC));
-figure('position', [550, 450, 240, 180])
+figure('position', [550, 450, 320, 180])
 bar(expl_AC)
 
 %% Figure 3 bottom row
@@ -107,9 +104,6 @@ for i=1:nr_sims
     recs50(i)=min(find(eucl_dist<size_pert*0.5));
     recs90(i)=min(find(eucl_dist<size_pert*0.1));
 end
-
-%save('fig_gen_randompertdata')
-%load('fig_gen_randompertdata')
 
 figure
 subplot(3,1,1)
